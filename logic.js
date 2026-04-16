@@ -14,24 +14,24 @@ function createUser(users, name, age) {
     age <= 0 ||
     !Number.isInteger(age)
   ) {
-    return "Invalid data";
+    return { success: false, message: "Invalid data" };
   }
 
   // Checking if user already exists
   let userExists = users.some(
     (user) => user.name.toLowerCase() === username.toLowerCase(),
   );
+
   if (userExists) {
-    return "User already exists";
+    return { success: false, message: "User already exists" };
   }
 
   let newUser = { name: username, age: age };
   users.push(newUser);
 
-  return "User Created";
+  return { success: true, data: newUser };
 }
 console.log(createUser(users, "Eleni", 30));
-//console.log(users);
 
 // Deleting a user
 function deleteUser(users, name) {
@@ -39,33 +39,48 @@ function deleteUser(users, name) {
 
   let index = users.findIndex((user) => user.name.toLowerCase() === username);
 
-  if (index !== -1) {
-    users.splice(index, 1);
-    return "User Deleted";
-  } else {
-    return "User not found";
+  if (index === -1) {
+    return { success: false, message: "User not found" };
   }
+
+  users.splice(index, 1);
+
+  return { success: true, message: "User deleted" };
 }
 deleteUser(users, "Eleni");
-//console.log(users);
 
 function getUsers(users) {
   return users;
 }
-console.log(getUsers(users));
-
 
 // Getting a user by name
 function getUserByName(users, name) {
-    let username = name.trim().toLowerCase(); //input normalization
-    
-    let user = users.find( //query
-        user => user.name.toLowerCase() === username
-    );
-    if (user) {
-        return user;
-    } else {
-        return "null"; //response handling
-    }
+  let username = name.trim().toLowerCase(); //input normalization
+
+  let user = users.find(
+    //query
+    (user) => user.name.toLowerCase() === username,
+  );
+  if (!user) {
+    return { success: false, message: "User not found" };
+  }
+  return user;
 }
-console.log(getUserByName(users, " uknown "));
+
+function updateUser(users, name, newAge) {
+  let username = name.trim().toLowerCase();
+
+  let user = users.find((user) => user.name.toLowerCase() === username);
+
+  if (!user) {
+    return { success: false, message: "User not found" };
+  }
+
+  if (typeof newAge !== "number" || newAge <= 0 || !Number.isInteger(newAge)) {
+    return { success: false, message: "Invalid data" };
+  }
+
+  user.age = newAge;
+
+  return { success: true, data: user };
+}
